@@ -4,7 +4,7 @@ options:
     default: |
       input {
         elasticsearch {
-          hosts => {% hosts %}
+          hosts => {{ hosts }}
           index => "logstash-input-elasticsearch-*"
           query => '{"query": { "match_all": {} } }'
           scroll => "5m"
