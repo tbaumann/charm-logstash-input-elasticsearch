@@ -1,0 +1,4 @@
+includes: ['layer:basic', 'interface:elasticsearch', 'interface:juju-info']
+options:
+  basic:
+    packages: ['python-jinja2']
