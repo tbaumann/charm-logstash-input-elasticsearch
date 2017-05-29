@@ -46,14 +46,13 @@ def elasticsearch_servers():
 def write_config():
     config = hookenv.config()
     hosts = elasticsearch_servers()
-    log("template: {}".format(config['template']))
     if data_changed('elasticsearch_servers', hosts) or data_changed('template', config['template']):
+        log("Writing config")
         if(hosts):
             from jinja2 import Template
             app_name = hookenv.service_name()
             template = Template(config['template'])
             hosts_str = ', '.join(map(lambda x: "'{}'".format(x), hosts))
-            log("hosts: {}".format(hosts_str))
             with open('/etc/logstash/conf.d/{}.conf'.format(app_name), 'w') as conf_file:
                 conf_file.write(str(
                     template.render({
@@ -62,6 +61,7 @@ def write_config():
                     )
                 ))
         else:
+            log("No elasticsearch servers connected. Removing config.")
             try:
                 app_name = hookenv.service_name()
                 os.remove('/etc/logstash/conf.d/{}.conf'.format(app_name))
