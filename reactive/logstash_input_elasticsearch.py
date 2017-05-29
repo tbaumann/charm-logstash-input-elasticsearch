@@ -23,11 +23,16 @@ def install_logstash_input_elasticsearch():
 
 
 @when_any('host-system.available', 'host-system.connected')
-@when('elasticsearch.available')
+@when('elasticsearch.connected')
 def connect_to_elasticsearch(elasticsearch):
     write_config()
     status_set('active', 'Ready')
     set_state('logstash-input-elasticsearch.started')
+
+
+@when('elasticsearchself.broken')
+def disconnect_from_elasticsearch(elasticsearch):
+    write_config()
 
 
 def elasticsearch_servers():
@@ -52,7 +57,7 @@ def write_config():
             from jinja2 import Template
             app_name = hookenv.service_name()
             template = Template(config['template'])
-            hosts_str = ', '.join(map(lambda x: "'{}'".format(x), hosts))
+            hosts_str = "[{}]".format(', '.join(map(lambda x: "'{}'".format(x), hosts)))
             with open('/etc/logstash/conf.d/{}.conf'.format(app_name), 'w') as conf_file:
                 conf_file.write(str(
                     template.render({
