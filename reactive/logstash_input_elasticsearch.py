@@ -72,3 +72,13 @@ def write_config():
                 os.remove('/etc/logstash/conf.d/{}.conf'.format(app_name))
             except FileNotFoundError:
                 pass
+
+
+@hook('stop')
+def stopped():
+    app_name = hookenv.service_name()
+    log("{} is stopping. Deleting conf file.".format(app_name))
+    try:
+        os.remove('/etc/logstash/conf.d/{}.conf'.format(app_name))
+    except FileNotFoundError:
+        pass
